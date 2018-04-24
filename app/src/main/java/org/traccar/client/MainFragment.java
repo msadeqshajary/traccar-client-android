@@ -49,6 +49,8 @@ import java.util.Set;
 
 public class MainFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
 
+    //Commit test
+
     private static final String TAG = MainFragment.class.getSimpleName();
 
     private static final int ALARM_MANAGER_INTERVAL = 15000;
