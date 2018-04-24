@@ -15,18 +15,25 @@
  */
 package org.traccar.client;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction().replace(android.R.id.content, new MainFragment()).commit();
-        }
+        setContentView(R.layout.main_activity);
+
+        //Init Toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar_toolbar);
+        TextView toolbarTitle = toolbar.findViewById(R.id.toolbar_title);
+        toolbarTitle.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/sans.ttf"));
+        toolbarTitle.setText("ردیابی");
     }
 
 }

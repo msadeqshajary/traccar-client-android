@@ -61,10 +61,10 @@ public class PositionProvider implements LostApiClient.ConnectionCallbacks, Loca
 
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-        deviceId = preferences.getString(MainFragment.KEY_DEVICE, "undefined");
-        interval = Long.parseLong(preferences.getString(MainFragment.KEY_INTERVAL, "600")) * 1000;
-        distance = Integer.parseInt(preferences.getString(MainFragment.KEY_DISTANCE, "0"));
-        angle = Integer.parseInt(preferences.getString(MainFragment.KEY_ANGLE, "0"));
+        deviceId = preferences.getString(SettingsFragment.KEY_DEVICE, "undefined");
+        interval = Long.parseLong(preferences.getString(SettingsFragment.KEY_INTERVAL, "600")) * 1000;
+        distance = Integer.parseInt(preferences.getString(SettingsFragment.KEY_DISTANCE, "0"));
+        angle = Integer.parseInt(preferences.getString(SettingsFragment.KEY_ANGLE, "0"));
     }
 
     public void startUpdates() {
@@ -89,7 +89,7 @@ public class PositionProvider implements LostApiClient.ConnectionCallbacks, Loca
     public void onConnected() {
         if (started) {
             LocationRequest request = LocationRequest.create()
-                    .setPriority(getPriority(preferences.getString(MainFragment.KEY_ACCURACY, "medium")))
+                    .setPriority(getPriority(preferences.getString(SettingsFragment.KEY_ACCURACY, "medium")))
                     .setInterval(distance > 0 || angle > 0 ? MINIMUM_INTERVAL : interval);
             LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, request, this);
         } else {
