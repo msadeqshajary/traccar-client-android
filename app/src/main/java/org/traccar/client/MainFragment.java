@@ -1,278 +1,233 @@
-/*
- * Copyright 2012 - 2017 Anton Tananaev (anton.tananaev@gmail.com)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.traccar.client;
 
-import android.Manifest;
-import android.app.AlarmManager;
-import android.app.AlertDialog;
-import android.app.PendingIntent;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
+import android.graphics.Typeface;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
-import android.preference.EditTextPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.preference.TwoStatePreference;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.webkit.URLUtil;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+
+import android.Manifest;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+public class MainFragment extends Fragment implements OnMapReadyCallback {
 
-public class MainFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
+    GoogleMap map;
+    Location lastLocation;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    TextView address;
 
-    private static final String TAG = MainFragment.class.getSimpleName();
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_main, container, false);
 
-    private static final int ALARM_MANAGER_INTERVAL = 15000;
+        // Initialize GoogleMap
+        if (map == null) {
+            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+        }
 
-    public static final String KEY_DEVICE = "id";
-    public static final String KEY_URL = "url";
-    public static final String KEY_INTERVAL = "interval";
-    public static final String KEY_DISTANCE = "distance";
-    public static final String KEY_ANGLE = "angle";
-    public static final String KEY_ACCURACY = "accuracy";
-    public static final String KEY_STATUS = "status";
+        // Initialize FusedLocationClient to get last location
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
 
-    private static final int PERMISSIONS_REQUEST_LOCATION = 2;
+        // show alert to get permission for ACCESS_FINE_LOCATION
+        checkLocationPermission();
 
-    private SharedPreferences sharedPreferences;
+        // show alert when gps settings is off
+        setLocationSettingsEnabled();
 
-    private AlarmManager alarmManager;
-    private PendingIntent alarmIntent;
+        //get last known location
+        getLastLocation();
+
+        address = v.findViewById(R.id.fragment_main_address);
+        address.setTypeface(Typeface.createFromAsset(getContext().getAssets(),"fonts/sansmedium.ttf"));
+        ImageView currentLocationImg = v.findViewById(R.id.fragment_main_current_img);
+        currentLocationImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getLastLocation();
+            }
+        });
+
+        return v;
+    }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (BuildConfig.HIDDEN_APP) {
-            removeLauncherIcon();
-        }
-
-        setHasOptionsMenu(true);
-
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        addPreferencesFromResource(R.xml.preferences);
-        initPreferences();
-
-        findPreference(KEY_DEVICE).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                return newValue != null && !newValue.equals("");
-            }
-        });
-        findPreference(KEY_URL).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                return (newValue != null) && validateServerURL(newValue.toString());
-            }
-        });
-
-        findPreference(KEY_INTERVAL).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                if (newValue != null) {
-                    try {
-                        int value = Integer.parseInt((String) newValue);
-                        return value > 0;
-                    } catch (NumberFormatException e) {
-                        Log.w(TAG, e);
-                    }
-                }
-                return false;
-            }
-        });
-
-        Preference.OnPreferenceChangeListener numberValidationListener = new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                if (newValue != null) {
-                    try {
-                        int value = Integer.parseInt((String) newValue);
-                        return value >= 0;
-                    } catch (NumberFormatException e) {
-                        Log.w(TAG, e);
-                    }
-                }
-                return false;
-            }
-        };
-        findPreference(KEY_DISTANCE).setOnPreferenceChangeListener(numberValidationListener);
-        findPreference(KEY_ANGLE).setOnPreferenceChangeListener(numberValidationListener);
-
-        alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
-        alarmIntent = PendingIntent.getBroadcast(getActivity(), 0, new Intent(getActivity(), AutostartReceiver.class), 0);
-
-        if (sharedPreferences.getBoolean(KEY_STATUS, false)) {
-            startTrackingService(true, false);
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        if(checkLocationPermission()){
+            map.setMyLocationEnabled(true);
         }
     }
 
-    private void removeLauncherIcon() {
-        String className = MainActivity.class.getCanonicalName().replace(".MainActivity", ".Launcher");
-        ComponentName componentName = new ComponentName(getActivity().getPackageName(), className);
-        PackageManager packageManager = getActivity().getPackageManager();
-        if (packageManager.getComponentEnabledSetting(componentName) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
-            packageManager.setComponentEnabledSetting(
-                    componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+    private void goToLocation(double lat, double lng){
+        LatLng latLng = new LatLng(lat,lng);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14f);
+        map.moveCamera(cameraUpdate);
+    }
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setIcon(android.R.drawable.ic_dialog_alert);
-            builder.setMessage(getString(R.string.hidden_alert));
-            builder.setPositiveButton(android.R.string.ok, null);
-            builder.show();
+    void setLocationSettingsEnabled(){
+        LocationRequest request = new LocationRequest();
+        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        LocationSettingsRequest.Builder settings = new LocationSettingsRequest.Builder().addLocationRequest(request);
+        SettingsClient client = LocationServices.getSettingsClient(getContext());
+        Task<LocationSettingsResponse> responseTask = client.checkLocationSettings(settings.build());
+
+        responseTask.addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                Log.e("LOCATION","SUCCESS");
+            }
+        });
+
+        responseTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if( e instanceof ResolvableApiException){
+                    try{
+                        ResolvableApiException exception = (ResolvableApiException) e;
+                        exception.startResolutionForResult(getActivity(),1);
+                    }catch (IntentSender.SendIntentException sendEx){
+                        Log.e("ERROR","GET LOCATION SETTINGS");
+                    }
+                }
+            }
+        });
+    }
+
+    void getLastLocation(){
+        // Start get location
+        // Check permission
+        if (checkLocationPermission())
+        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if(location != null){
+                    goToLocation(location.getLatitude(),location.getLongitude());
+                    lastLocation = location;
+                    if(!Geocoder.isPresent()){
+                        Toast.makeText(getContext(),"مشکل در دریافت آدرس",Toast.LENGTH_LONG).show();
+                    }else startIntentService();
+                }else{
+                    Log.e("LOCATION","NULL");
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e("LOCATION","FAILURE");
+            }
+        });
+    }
+
+    public boolean checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        1);
+
+            return false;
+        } else {
+            return true;
         }
     }
+
 
     @Override
     public void onResume() {
         super.onResume();
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        if (ContextCompat.checkSelfPermission(getContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+
+            Log.e("RESUME","OK");
+            getLastLocation();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
-    }
 
-    private void setPreferencesEnabled(boolean enabled) {
-        findPreference(KEY_DEVICE).setEnabled(enabled);
-        findPreference(KEY_URL).setEnabled(enabled);
-        findPreference(KEY_INTERVAL).setEnabled(enabled);
-        findPreference(KEY_DISTANCE).setEnabled(enabled);
-        findPreference(KEY_ANGLE).setEnabled(enabled);
-        findPreference(KEY_ACCURACY).setEnabled(enabled);
-    }
+        if (ContextCompat.checkSelfPermission(getContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
 
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(KEY_STATUS)) {
-            if (sharedPreferences.getBoolean(KEY_STATUS, false)) {
-                startTrackingService(true, false);
-            } else {
-                stopTrackingService();
-            }
-        } else if (key.equals(KEY_DEVICE)) {
-            findPreference(KEY_DEVICE).setSummary(sharedPreferences.getString(KEY_DEVICE, null));
+            Log.e("PAUSE","OK");
         }
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.main, menu);
-        super.onCreateOptionsMenu(menu, inflater);
+    private void startIntentService(){
+        Intent intent = new Intent(getContext(),ReverseGeocodingService.class);
+        AddressResultReceiver addressResultReceiver = new AddressResultReceiver(new Handler());
+        intent.putExtra(Constants.RECEIVER, addressResultReceiver);
+        intent.putExtra(Constants.LOCATION_DATA_EXTRA,lastLocation);
+        getContext().startService(intent);
+
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.status) {
-            startActivity(new Intent(getActivity(), StatusActivity.class));
-            return true;
-        } else if (item.getItemId() == R.id.about) {
-            startActivity(new Intent(getActivity(), AboutActivity.class));
-            return true;
+    class AddressResultReceiver extends ResultReceiver {
+        AddressResultReceiver(Handler handler) {
+            super(handler);
         }
-        return super.onOptionsItemSelected(item);
-    }
 
-    private void initPreferences() {
-        PreferenceManager.setDefaultValues(getActivity(), R.xml.preferences, false);
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
 
-        if (!sharedPreferences.contains(KEY_DEVICE)) {
-            String id = String.valueOf(new Random().nextInt(900000) + 100000);
-            sharedPreferences.edit().putString(KEY_DEVICE, id).apply();
-            ((EditTextPreference) findPreference(KEY_DEVICE)).setText(id);
-        }
-        findPreference(KEY_DEVICE).setSummary(sharedPreferences.getString(KEY_DEVICE, null));
-    }
-
-    private void startTrackingService(boolean checkPermission, boolean permission) {
-        if (checkPermission) {
-            Set<String> missingPermissions = new HashSet<>();
-            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                missingPermissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-            }
-            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                missingPermissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-            }
-            if (missingPermissions.isEmpty()) {
-                permission = true;
-            } else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    requestPermissions(missingPermissions.toArray(new String[missingPermissions.size()]),
-                            PERMISSIONS_REQUEST_LOCATION);
-                }
+            if (resultData == null) {
                 return;
             }
-        }
 
-        if (permission) {
-            setPreferencesEnabled(false);
-            ContextCompat.startForegroundService(getActivity(), new Intent(getActivity(), TrackingService.class));
-            alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    ALARM_MANAGER_INTERVAL, ALARM_MANAGER_INTERVAL, alarmIntent);
-        } else {
-            sharedPreferences.edit().putBoolean(KEY_STATUS, false).apply();
-            TwoStatePreference preference = (TwoStatePreference) findPreference(KEY_STATUS);
-            preference.setChecked(false);
-        }
-    }
-
-    private void stopTrackingService() {
-        alarmManager.cancel(alarmIntent);
-        getActivity().stopService(new Intent(getActivity(), TrackingService.class));
-        setPreferencesEnabled(true);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PERMISSIONS_REQUEST_LOCATION) {
-            boolean granted = true;
-            for (int result : grantResults) {
-                if (result != PackageManager.PERMISSION_GRANTED) {
-                    granted = false;
-                    break;
-                }
+            // Display the address string
+            // or an error message sent from the intent service.
+            String mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
+            if (mAddressOutput == null) {
+                mAddressOutput = "";
             }
-            startTrackingService(false, granted);
-        }
-    }
+            //displayAddressOutput();
 
-    private boolean validateServerURL(String userUrl) {
-        int port = Uri.parse(userUrl).getPort();
-        if (URLUtil.isValidUrl(userUrl) && (port == -1 || (port > 0 && port <= 65535))
-                && (URLUtil.isHttpUrl(userUrl) || URLUtil.isHttpsUrl(userUrl))) {
-            return true;
+            // Show a toast message if an address was found.
+            if (resultCode == Constants.SUCCESS_RESULT) {
+                address.setText(mAddressOutput);
+            }
+
         }
-        Toast.makeText(getActivity(), R.string.error_msg_invalid_url, Toast.LENGTH_LONG).show();
-        return false;
     }
 
 }

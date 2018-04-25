@@ -62,7 +62,7 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
         networkManager = new NetworkManager(context, this);
         isOnline = networkManager.isOnline();
 
-        url = preferences.getString(MainFragment.KEY_URL, context.getString(R.string.settings_url_default_value));
+        url = preferences.getString(SettingsFragment.KEY_URL, context.getString(R.string.settings_url_default_value));
 
         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
@@ -152,7 +152,7 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
             public void onComplete(boolean success, Position result) {
                 if (success) {
                     if (result != null) {
-                        if (result.getDeviceId().equals(preferences.getString(MainFragment.KEY_DEVICE, null))) {
+                        if (result.getDeviceId().equals(preferences.getString(SettingsFragment.KEY_DEVICE, null))) {
                             send(result);
                         } else {
                             delete(result);

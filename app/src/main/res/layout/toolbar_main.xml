@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="54dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/primary"
+    app:contentInsetEnd="0dp"
+    app:contentInsetStart="0dp"
+    android:id="@+id/toolbar_toolbar"
+    android:elevation="4dp"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:src="@drawable/ic_language_white_24px"
+            android:id="@+id/toolbar_language"
+            />
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:src="@drawable/ic_share_white_36px"
+            android:id="@+id/toolbar_share"
+            />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:id="@+id/toolbar_title"
+            android:gravity="right"
+            android:textColor="#FFF"
+            android:text="title"
+            android:textSize="15sp"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingEnd="5dp"
+            />
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:src="@drawable/ic_menu_white_36px"
+            android:id="@+id/toolbar_menu"
+            />
+
+    </LinearLayout>
+
+</android.support.v7.widget.Toolbar>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        map:cameraTargetLat="32.640654"
+        map:cameraTargetLng="50.9174547"
+        map:cameraZoom="4.5"
+        map:uiRotateGestures="false"
+        map:uiTiltGestures="false"
+        map:uiScrollGestures="true"
+        map:uiZoomGestures="true"
+        tools:context=".MainActivity" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="15dp"
+        >
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_placeholder"
+            android:background="@drawable/shape_bg_text"
+            android:padding="10dp"
+            android:layout_margin="5dp"
+            android:id="@+id/fragment_main_current_img"
+            />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="5dp"
+            android:textColor="#fff"
+            android:background="@drawable/shape_bg_text"
+            android:id="@+id/fragment_main_address"
+            android:gravity="center"
+            android:layout_margin="5dp"
+            />
+
+    </LinearLayout>
+
+</RelativeLayout>

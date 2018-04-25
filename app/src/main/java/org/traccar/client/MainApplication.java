@@ -61,7 +61,7 @@ public class MainApplication extends Application {
             Uri.Builder builder = new Uri.Builder();
             builder.scheme(scheme).encodedAuthority(host + ":" + port).build();
             SharedPreferences.Editor editor = preferences.edit();
-            editor.putString(MainFragment.KEY_URL, builder.toString());
+            editor.putString(SettingsFragment.KEY_URL, builder.toString());
 
             editor.remove("port");
             editor.remove("address");

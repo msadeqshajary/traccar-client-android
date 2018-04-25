@@ -29,12 +29,18 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:design:27.1.0'
+    implementation 'com.google.android.gms:play-services-maps:15.0.0'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation "com.google.android.gms:play-services-location:15.0.0"
+    compile 'com.android.support:design:27.1.1'
     compile 'com.mapzen.android:lost:3.0.4'
+    compile 'jp.wasabeef:blurry:2.1.1'
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:robolectric:3.6.1'
-    googleCompile 'com.google.firebase:firebase-core:11.8.0'
+    googleCompile 'com.google.firebase:firebase-core:15.0.0'
     googleCompile 'com.crashlytics.sdk.android:crashlytics:2.9.1'
+    implementation 'com.android.support:cardview-v7:27.1.1'
 }
 
 if (getGradle().getStartParameter().getTaskRequests().toString().contains("Google")) {

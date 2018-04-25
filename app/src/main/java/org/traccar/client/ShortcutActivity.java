@@ -117,11 +117,11 @@ public class ShortcutActivity extends AppCompatActivity implements LostApiClient
         if (location != null) {
 
             Position position = new Position(
-                    preferences.getString(MainFragment.KEY_DEVICE, null),
+                    preferences.getString(SettingsFragment.KEY_DEVICE, null),
                     location, PositionProvider.getBatteryLevel(this));
 
             String request = ProtocolFormatter.formatRequest(
-                    preferences.getString(MainFragment.KEY_URL, null), position, ALARM_SOS);
+                    preferences.getString(SettingsFragment.KEY_URL, null), position, ALARM_SOS);
 
             RequestManager.sendRequestAsync(request, new RequestManager.RequestHandler() {
                 @Override
@@ -157,13 +157,13 @@ public class ShortcutActivity extends AppCompatActivity implements LostApiClient
             switch (action) {
                 case ACTION_START:
                     PreferenceManager.getDefaultSharedPreferences(this)
-                            .edit().putBoolean(MainFragment.KEY_STATUS, true).apply();
+                            .edit().putBoolean(SettingsFragment.KEY_STATUS, true).apply();
                     ContextCompat.startForegroundService(this, new Intent(this, TrackingService.class));
                     Toast.makeText(this, R.string.status_service_create, Toast.LENGTH_SHORT).show();
                     break;
                 case ACTION_STOP:
                     PreferenceManager.getDefaultSharedPreferences(this)
-                            .edit().putBoolean(MainFragment.KEY_STATUS, false).apply();
+                            .edit().putBoolean(SettingsFragment.KEY_STATUS, false).apply();
                     stopService(new Intent(this, TrackingService.class));
                     Toast.makeText(this, R.string.status_service_destroy, Toast.LENGTH_SHORT).show();
                     break;
