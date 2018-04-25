@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="320dp"
+    android:layout_gravity="right"
+    android:background="#EFEFEF"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:background="@color/primary"
+        android:layout_height="150dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="35dp"
+            android:id="@+id/drawer_profile_img"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_user"
+            app:civ_border_color="#FFF"
+            app:civ_border_width="2dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/drawer_profile_img"
+            android:layout_marginRight="15dp"
+            android:textColor="#FFF"
+            android:text="کاربر مهمان"
+            android:id="@+id/drawer_profile_name"
+            android:layout_centerVertical="true"
+            />
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:padding="5dp"
+        android:gravity="right|center_vertical"
+        android:text="خانه اصلی"
+        android:drawableRight="@drawable/ic_home_icon_silhouette"
+        android:drawablePadding="15dp"
+        android:id="@+id/drawer_home"
+        android:layout_marginRight="12dp"
+        android:onClick="onClick"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:padding="5dp"
+        android:gravity="right|center_vertical"
+        android:text="پروفایل کاربری"
+        android:drawableRight="@drawable/ic_man_user"
+        android:drawablePadding="15dp"
+        android:id="@+id/drawer_profile"
+        android:layout_marginRight="12dp"
+        android:onClick="onClick"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:padding="5dp"
+        android:gravity="right|center_vertical"
+        android:text="اتصال به گروه"
+        android:drawableRight="@drawable/ic_link_symbol"
+        android:drawablePadding="15dp"
+        android:id="@+id/drawer_groups"
+        android:layout_marginRight="12dp"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:padding="5dp"
+        android:gravity="right|center_vertical"
+        android:text="تنظیمات"
+        android:drawableRight="@drawable/ic_settings_gears"
+        android:drawablePadding="15dp"
+        android:id="@+id/drawer_settings"
+        android:layout_marginRight="12dp"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:padding="5dp"
+        android:gravity="right|center_vertical"
+        android:text="اشتراک گذاری برنامه"
+        android:drawableRight="@drawable/ic_share_connection_sing"
+        android:drawablePadding="15dp"
+        android:id="@+id/drawer_share"
+        android:layout_marginRight="12dp"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:padding="5dp"
+        android:gravity="right|center_vertical"
+        android:text="راهنما"
+        android:drawableRight="@drawable/ic_help_operator"
+        android:drawablePadding="15dp"
+        android:id="@+id/drawer_help"
+        android:layout_marginRight="12dp"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:padding="5dp"
+        android:gravity="right|center_vertical"
+        android:text="بازخورد"
+        android:drawableRight="@drawable/ic_feedback"
+        android:drawablePadding="15dp"
+        android:id="@+id/drawer_feedback"
+        android:layout_marginRight="12dp"
+        />
+
+</LinearLayout>
