@@ -20,13 +20,21 @@
         <ImageView
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginRight="5dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="10dp"
-            android:layout_marginLeft="10dp"
-            android:src="@drawable/ic_menu_white_36px"
-            android:id="@+id/toolbar_menu"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:src="@drawable/ic_language_white_24px"
+            android:id="@+id/toolbar_language"
+            />
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:src="@drawable/ic_share_white_36px"
+            android:id="@+id/toolbar_share"
             />
 
         <TextView
@@ -39,32 +47,22 @@
             android:textColor="#FFF"
             android:text="@string/toolbar_title"
             android:textSize="15sp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginRight="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
             />
 
-
-
         <ImageView
             android:layout_width="28dp"
             android:layout_height="28dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginEnd="5dp"
-            android:layout_marginRight="5dp"
-            android:src="@drawable/ic_share_white_36px"
-            android:id="@+id/toolbar_share"
-            />
-
-        <ImageView
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="5dp"
-            android:layout_marginRight="5dp"
-            android:src="@drawable/ic_language_white_24px"
-            android:id="@+id/toolbar_language"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:src="@drawable/ic_menu_white_36px"
+            android:id="@+id/toolbar_menu"
             />
 
     </LinearLayout>

@@ -21,14 +21,20 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.traccar.client.Groups.GroupsFragment;
 import org.traccar.client.Profile.DbHelper;
 import org.traccar.client.Profile.ProfileFragment;
 import org.traccar.client.Profile.UserItem;
+
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -36,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
     TextView profileText;
     CircleImageView profileImg;
-
+    DrawerLayout drawer;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,7 +53,16 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar_toolbar);
         TextView toolbarTitle = toolbar.findViewById(R.id.toolbar_title);
         toolbarTitle.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/sans.ttf"));
-        toolbarTitle.setText("ردیابی");
+        drawer = findViewById(R.id.drawer);
+
+        final ImageView drawerIcon = toolbar.findViewById(R.id.toolbar_menu);
+        drawerIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(Locale.getDefault().getLanguage().equals("fa"))drawer.openDrawer(Gravity.END);
+                else drawer.openDrawer(Gravity.START);
+            }
+        });
 
         //Init views
         drawerHelper();
@@ -100,9 +115,25 @@ public class MainActivity extends AppCompatActivity {
                 break;
                 case R.id.drawer_profile:fragment = new ProfileFragment();
                 break;
+            case R.id.drawer_groups:fragment = new GroupsFragment();
+                break;
+            case R.id.drawer_settings: {
+                getFragmentManager().beginTransaction().replace(R.id.main_activity_container, new SettingsFragment()).commit();
+                if (drawer.isDrawerOpen(Gravity.START))
+                    drawer.closeDrawer(Gravity.START);
+                else if (drawer.isDrawerOpen(Gravity.END))
+                    drawer.closeDrawer(Gravity.END);
+            }
+                break;
         }
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_container,fragment).commit();
+        if(fragment!=null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_container, fragment).commit();
+            if (drawer.isDrawerOpen(Gravity.START))
+                drawer.closeDrawer(Gravity.START);
+            else if (drawer.isDrawerOpen(Gravity.END))
+                drawer.closeDrawer(Gravity.END);
+        }
     }
 
 }

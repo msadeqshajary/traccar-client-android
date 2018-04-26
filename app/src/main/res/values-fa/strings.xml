@@ -39,4 +39,14 @@ www.traccar.org/client</string>
   <string name="hidden_alert">نرم افزار مخفی است . جهت نمایش آن با این شماره تماس بگیرید.
 8722227 (Traccar)</string>
   <string name="error_msg_invalid_url">لطفا آدرس معتبر که با http:// یا https:// شروع میشود را وارد نمایید</string>
+
+  <string name="drawer_home">خانه اصلی</string>
+  <string name="drawer_profile_name">کاربر مهمان</string>
+  <string name="drawer_profile">پروفایل کاربری</string>
+  <string name="drawer_join_groups">اتصال به گروه</string>
+  <string name="drawer_settings">تنظیمات</string>
+  <string name="drawer_share">اشتراک گذاری</string>
+  <string name="drawer_guide">راهنما</string>
+  <string name="drawer_feedback">بازخورد</string>
+  <string name="toolbar_title">ردیاب آنلاین</string>
 </resources>

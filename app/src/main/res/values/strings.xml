@@ -45,4 +45,14 @@
     <string name="hidden_alert">The app has been hidden. To open it again please dial 8722227 (TRACCAR).</string>
     <string name="error_msg_invalid_url">Please enter a valid http:// or https:// URL</string>
     <string name="title_activity_maps">Map</string>
+
+    <string name="drawer_home">Home Page</string>
+    <string name="drawer_profile_name">Guest User</string>
+    <string name="drawer_profile">User Profile</string>
+    <string name="drawer_join_groups">Groups</string>
+    <string name="drawer_settings">Settings</string>
+    <string name="drawer_share">Share</string>
+    <string name="drawer_guide">Guide</string>
+    <string name="drawer_feedback">Feedback</string>
+    <string name="toolbar_title">Online Tracker</string>
 </resources>
