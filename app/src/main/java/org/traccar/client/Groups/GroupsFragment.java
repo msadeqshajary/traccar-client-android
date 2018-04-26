@@ -51,7 +51,7 @@ public class GroupsFragment extends Fragment {
         preferences = getContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
         if(preferences.getString("DEVICEID","").equals("")) {
             try {
-                deviceId = getDeviceId();
+                getDeviceId();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -104,7 +104,7 @@ public class GroupsFragment extends Fragment {
                         @Override
                         public void run() {
                             try {
-                                adapter = new GroupsAdapter(getGroupsFromJson(response));
+                                adapter = new GroupsAdapter(getActivity(),getGroupsFromJson(response));
                                 list.setAdapter(adapter);
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -142,8 +142,8 @@ public class GroupsFragment extends Fragment {
         return items;
     }
 
-    String getDeviceId() throws JSONException {
-        final String urlString = "http://185.142.158.195:10023/explorer/#!/device/device_create";
+    void getDeviceId() throws JSONException {
+        final String urlString = "http://185.142.158.195:10023/api/devices";
         String deviceUniqueId = String.valueOf(new Random().nextInt(900000) + 100000);
         String brand = Build.MANUFACTURER;
         String model = Build.MODEL;
@@ -185,14 +185,17 @@ public class GroupsFragment extends Fragment {
         requestManager.setListener(new RequestManager.RequestListener() {
             @Override
             public void onResultCompleted(String result) {
-                Log.e("DEVICE RESULT",result);
-                //SharedPreferences.Editor editor = preferences.edit();
+                SharedPreferences.Editor editor = preferences.edit();
+                try {
+                    JSONObject res = new JSONObject(result);
+                    deviceId = res.getString("id");
+                    Log.e("DEVICE ID",deviceId);
+                    editor.putString("DEVICEID","5ae1c887d8f0981a31f139b4");
+                    editor.apply();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
-
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("DEVICEID","5ae1c887d8f0981a31f139b4");
-        editor.apply();
-        return "5ae1c887d8f0981a31f139b4";
     }
 }

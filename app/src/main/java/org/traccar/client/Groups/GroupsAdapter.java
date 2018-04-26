@@ -1,5 +1,8 @@
 package org.traccar.client.Groups;
 
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -8,9 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.google.android.gms.maps.model.LatLng;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,20 +27,24 @@ import static android.graphics.Typeface.BOLD;
 public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.Holder> {
 
     private ArrayList<GroupItem> items;
+    private Activity context;
 
-    public GroupsAdapter(ArrayList<GroupItem> items) {
+    GroupsAdapter(Activity context, ArrayList<GroupItem> items) {
         this.items = items;
+        this.context = context;
     }
 
     class Holder extends RecyclerView.ViewHolder{
 
         TextView titleTv,title,catTv,cat,idTv,id;
         ImageView add;
+        LinearLayout container;
         Holder(View itemView) {
             super(itemView);
             Typeface sansMedium = Typeface.createFromAsset(itemView.getContext().getAssets(),"fonts/sansmedium.ttf");
             Typeface sansLight = Typeface.createFromAsset(itemView.getContext().getAssets(),"fonts/sanslight.ttf");
 
+            container = itemView.findViewById(R.id.item_container);
             titleTv = itemView.findViewById(R.id.item_gp_gp_title_tv);
             title  = itemView.findViewById(R.id.item_gp_gp_title);
             catTv = itemView.findViewById(R.id.item_gp_gp_cat_tv);
@@ -64,7 +71,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.Holder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull GroupsAdapter.Holder holder, int position) {
+    public void onBindViewHolder(@NonNull final GroupsAdapter.Holder holder, int position) {
         final GroupItem group = items.get(position);
 
         holder.cat.setText(group.getCategory());
@@ -80,7 +87,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.Holder> {
                     jsonObject.put("deviceId",GroupsFragment.deviceId);
                     jsonObject.put("groupId",group.getId());
 
-                    String url = "http://185.142.158.195:10023/explorer/#!/device95group/device_group_create";
+                    String url = "http://185.142.158.195:10023/api/device_groups";
 
                     RequestManager requestManager = new RequestManager();
                     requestManager.sendRequestAsync(url, new RequestManager.RequestHandler() {
@@ -95,7 +102,21 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.Holder> {
                         @Override
                         public void onResultCompleted(String result) {
                             Log.e("DEVICE RESULT",result);
-                            //SharedPreferences.Editor editor = preferences.edit();
+                            if(result.contains("modifiedAt")){
+                                context.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(context.getApplicationContext(),"با موفقیت به گروه افزوده شدید",Toast.LENGTH_LONG).show();
+                                        holder.container.setBackgroundColor(Color.parseColor("#8BC34A"));
+                                    }
+                                });
+
+                            }else context.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(context.getApplicationContext(),"مشکل در افزوده شدن به گروه",Toast.LENGTH_LONG).show();
+                                }
+                            });
                         }
                     });
 
