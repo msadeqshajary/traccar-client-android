@@ -42,4 +42,11 @@ public class ProtocolFormatter {
 
         return builder.build().toString();
     }
+
+    public static String formatRequest(String url,String filter){
+        Uri serverUrl = Uri.parse(url);
+        Uri.Builder builder = serverUrl.buildUpon()
+                .appendQueryParameter("filter",filter);
+        return builder.build().toString();
+    }
 }

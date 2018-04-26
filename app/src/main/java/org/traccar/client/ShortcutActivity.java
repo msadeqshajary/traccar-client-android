@@ -123,7 +123,8 @@ public class ShortcutActivity extends AppCompatActivity implements LostApiClient
             String request = ProtocolFormatter.formatRequest(
                     preferences.getString(SettingsFragment.KEY_URL, null), position, ALARM_SOS);
 
-            RequestManager.sendRequestAsync(request, new RequestManager.RequestHandler() {
+            RequestManager requestManager = new RequestManager();
+            requestManager.sendRequestAsync(request, new RequestManager.RequestHandler() {
                 @Override
                 public void onComplete(boolean success) {
                     if (success) {

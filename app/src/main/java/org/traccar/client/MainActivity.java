@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
     TextView profileText;
     CircleImageView profileImg;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

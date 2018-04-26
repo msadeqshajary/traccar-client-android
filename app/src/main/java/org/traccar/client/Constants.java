@@ -10,5 +10,7 @@ package org.traccar.client;
                 ".RESULT_DATA_KEY";
         public static final String LOCATION_DATA_EXTRA = PACKAGE_NAME +
                 ".LOCATION_DATA_EXTRA";
+        public final static String userId = "ugnmLgerhTh8MdNG8tzjixmQMeFl73i6sFS6OMW3TzFzac3VTwszQP6OCjtjYcE8";
+
     }
 
