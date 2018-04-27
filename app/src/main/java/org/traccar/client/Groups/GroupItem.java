@@ -1,7 +1,15 @@
 package org.traccar.client.Groups;
 
 public class GroupItem {
-    private String title,category,id;
+    private String title,category, name,id;
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
 
     public String getTitle() {
         return title;
@@ -19,11 +27,11 @@ public class GroupItem {
         this.category = category;
     }
 
-    public String getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setName(String name) {
+        this.name = name;
     }
 }

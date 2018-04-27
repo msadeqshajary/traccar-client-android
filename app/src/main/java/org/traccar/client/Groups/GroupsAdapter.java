@@ -1,7 +1,6 @@
 package org.traccar.client.Groups;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
@@ -76,7 +75,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.Holder> {
 
         holder.cat.setText(group.getCategory());
         holder.title.setText(group.getTitle());
-        holder.id.setText(group.getId());
+        holder.id.setText(group.getName());
 
         holder.add.setOnClickListener(new View.OnClickListener() {
             @Override

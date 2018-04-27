@@ -44,8 +44,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginLeft="15dp"
+            android:layout_gravity="right"
+            android:layout_marginRight="15dp"
             android:layout_marginTop="5dp"
             android:id="@+id/fragment_profile_subject"
             android:text="@string/profile_subject"
@@ -74,6 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:id="@+id/fragment_profile_name_til"
+            android:gravity="right"
             android:padding="8dp"
             >
             <EditText
@@ -92,7 +93,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:id="@+id/fragment_profile_lastname_til"
-            android:padding="8dp"
+            android:gravity="right"
             >
             <EditText
                 android:layout_width="match_parent"
@@ -110,7 +111,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:id="@+id/fragment_profile_phone_til"
-            android:padding="8dp"
+            android:gravity="right"
             >
             <EditText
                 android:layout_width="match_parent"
@@ -133,20 +134,20 @@
             android:layout_marginTop="10dp"
             android:layout_height="wrap_content">
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:text="@string/profile_device"
-                android:id="@+id/fragment_profile_phone_name_tv"
-                />
-
-            <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:id="@+id/fragment_profile_phone_name"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="@string/profile_device"
+                android:gravity="left"
+                android:id="@+id/fragment_profile_phone_name_tv"
                 />
         </LinearLayout>
         <Button

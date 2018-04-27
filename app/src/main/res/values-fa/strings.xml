@@ -49,4 +49,15 @@ www.traccar.org/client</string>
   <string name="drawer_guide">راهنما</string>
   <string name="drawer_feedback">بازخورد</string>
   <string name="toolbar_title">ردیاب آنلاین</string>
+
+  <string name="groups_hint">جستجو در گروهها</string>
+  <string name="profile_subject">مشخصات کاربری</string>
+  <string name="profile_name">نام</string>
+  <string name="profile_last">نام خانوادگی</string>
+  <string name="profile_phone">شماره همراه</string>
+  <string name="profile_device">نام دستگاه :</string>
+  <string name="profile_submit">بروزرسانی پروفایل</string>
+  <string name="group_name">نام گروه :</string>
+  <string name="group_title">عنوان گروه: </string>
+  <string name="group_cat">دسته بندی : </string>
 </resources>

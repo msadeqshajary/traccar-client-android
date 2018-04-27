@@ -1,6 +1,5 @@
 package org.traccar.client.Groups;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -24,7 +23,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.traccar.client.Constants;
-import org.traccar.client.MainActivity;
 import org.traccar.client.ProtocolFormatter;
 import org.traccar.client.R;
 import org.traccar.client.RequestManager;
@@ -133,9 +131,10 @@ public class GroupsFragment extends Fragment {
         for(int i =0;i<rows.length();i++){
             JSONObject row = rows.getJSONObject(i);
             GroupItem group = new GroupItem();
-            group.setId(row.getString("id"));
+            group.setName(row.getString("name"));
             group.setCategory(row.getString("category"));
             group.setTitle(row.getString("title"));
+            group.setId(row.getString("id"));
 
             items.add(group);;
         }
