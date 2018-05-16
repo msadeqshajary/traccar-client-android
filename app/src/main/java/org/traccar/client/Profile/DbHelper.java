@@ -41,7 +41,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(USER_DEVICE,user.getDevice());
-        values.put(USER_IMAGE,user.getImg());
+        if(user.getImg()!=null) values.put(USER_IMAGE,user.getImg());
         values.put(USER_LASTNAME,user.getLast());
         values.put(USER_NAME,user.getName());
         values.put(USER_PHONE,user.getPhone());

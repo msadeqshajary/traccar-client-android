@@ -93,7 +93,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         long lastUpdate = preferences.getLong("lastUpdate",0);
         if(lastUpdate!=0){
             calendar.setTimeInMillis(preferences.getLong("lastUpdate",0));
-            lastLocationStatus.setText("آخرین ارسال موقعیت شما : "+calendar.get(Calendar.HOUR)+":"+calendar.get(Calendar.MINUTE));
+            lastLocationStatus.setText("آخرین ارسال موقعیت شما : "+ remainingTime(Calendar.getInstance().getTimeInMillis(),calendar.getTimeInMillis()));
         }else{
             lastLocationStatus.setText("تا کنون موقعیت شما به سرور ارسال نشده است");
         }
@@ -217,7 +217,6 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         intent.putExtra(Constants.RECEIVER, addressResultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA,lastLocation);
         getContext().startService(intent);
-
     }
 
     class AddressResultReceiver extends ResultReceiver {
@@ -246,6 +245,24 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
             }
 
         }
+    }
+
+    private String remainingTime(long now , long time){
+        long diff = now - time;
+
+        int seconds = (int) (diff / 1000) % 60 ;
+        int minutes = (int) ((diff / (1000*60)) % 60);
+        int hours   = (int) ((diff / (1000*60*60)) % 24);
+        int days = (int) (diff / (1000*60*60*24));
+
+        StringBuilder builder = new StringBuilder();
+
+        System.out.println(hours + " hours ago");
+        System.out.println(minutes + " minutes ago");
+        System.out.println(seconds + " seconds ago");
+        System.out.println(days + " days ago");
+
+        return (minutes>0)?minutes+" دقیقه پیش... ":seconds+" ثانیه پیش ...";
     }
 
 }

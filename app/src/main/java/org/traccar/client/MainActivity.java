@@ -16,10 +16,13 @@
 package org.traccar.client;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
@@ -31,6 +34,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.traccar.client.Groups.GroupsFragment;
 import org.traccar.client.Map.MainFragment;
 import org.traccar.client.Profile.DbHelper;
@@ -54,6 +59,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        //setLang();
+        String accessToken = preferences.getString("AccessToken","");
+        String id = preferences.getString("UserId","");
+        if(!(accessToken.equals("") || id.equals(""))){
+            if(!preferences.getBoolean("UserProfile",false)) getUserProfile(accessToken,id);
+        }
+
+
         //Init Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar_toolbar);
         TextView toolbarTitle = toolbar.findViewById(R.id.toolbar_title);
@@ -64,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         drawerIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(Locale.getDefault().getLanguage().equals("fa"))drawer.openDrawer(Gravity.END);
+                if(Locale.getDefault().getLanguage().equals("fa") || Locale.getDefault().getLanguage().equals("ar") )drawer.openDrawer(Gravity.END);
                 else drawer.openDrawer(Gravity.START);
             }
         });
@@ -75,23 +90,23 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.e("LANG","CLICKED");
                 LanguageDialogFragment dialogFragment = new LanguageDialogFragment();
-                dialogFragment.show(getSupportFragmentManager(),"TAG");
-                dialogFragment.onDismiss(new DialogInterface() {
-                    @Override
-                    public void cancel() {
-
-                    }
-
-                    @Override
-                    public void dismiss() {
-//                        if(fragment!=null){
-//                            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_container, fragment).commit();
-//                        }else
-//                            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_container, new MainFragment()).commit();
-                    }
-                });
+                dialogFragment.show(getSupportFragmentManager(),"LANGUAGE");
+//                dialogFragment.onDismiss(new DialogInterface() {
+//                    @Override
+//                    public void cancel() {
+//
+//                    }
+//
+//                    @Override
+//                    public void dismiss() {
+////                        if(fragment!=null){
+////                            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_container, fragment).commit();
+////                        }else
+////                            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_container, new MainFragment()).commit();
+//                    }
+//                });
             }
-        });
+       });
 
         //Init views
         drawerHelper();
@@ -163,6 +178,70 @@ public class MainActivity extends AppCompatActivity {
             else if (drawer.isDrawerOpen(Gravity.END))
                 drawer.closeDrawer(Gravity.END);
         }
+    }
+
+    void setLang() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        if (!(preferences.getString("lang", "").length() > 1)) {
+
+            String lang;
+            switch (Locale.getDefault().getLanguage()) {
+                case "en":
+                    lang = "en";
+                    break;
+                case "fa":
+                    lang = "fa";
+                    break;
+                case "ar":
+                    lang = "ar";
+                    break;
+                default:
+                    lang = "en";
+                    break;
+            }
+
+            preferences.edit().putString("lang", lang).apply();
+        }
+    }
+
+    void getUserProfile(String token,String id){
+
+        RequestManager requestManager = new RequestManager();
+        String url = "http://185.142.158.195:10023/api/users/"+id+"?access_token="+token;
+        requestManager.setToken(token);
+        requestManager.sendRequestAsync(url, "GET", new RequestManager.RequestHandler() {
+            @Override
+            public void onComplete(boolean success) {
+                Log.e("AUTHORIZATION",success+"");
+            }
+        });
+
+        requestManager.setListener(new RequestManager.RequestListener() {
+            @Override
+            public void onResultCompleted(String result) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(result);
+                        UserItem userItem = new UserItem();
+                        userItem.setLast(jsonObject.getString("lastname"));
+                        userItem.setName(jsonObject.getString("firstname"));
+                        userItem.setPhone(jsonObject.getString("mobile"));
+                        userItem.setDevice(Build.MANUFACTURER + " " +Build.MODEL);
+
+                        DbHelper helper = new DbHelper(getApplicationContext());
+                        helper.insertUser(userItem);
+                        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                        preferences.edit().putBoolean("UserProfile",true).apply();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                updateDrawerProfile();
+                            }
+                        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+            }
+        });
     }
 
 }

@@ -15,32 +15,29 @@
  */
 package org.traccar.client;
 
-import android.content.ContentValues;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
+import android.util.Base64;
 import android.util.Log;
-import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
 
 public class RequestManager {
 
     private static final int TIMEOUT = 15 * 1000;
     String data;
+    String token;
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public void setData(String values) {
         this.data = values;
@@ -92,13 +89,13 @@ public class RequestManager {
         try {
             URL url = new URL(request);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
             connection.setReadTimeout(TIMEOUT);
             connection.setConnectTimeout(TIMEOUT);
             connection.setRequestMethod((method != null) ? "GET" : "POST");
             if (data != null) {
                 connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
                 connection.setRequestProperty("Accept","application/json");
-
 
                 DataOutputStream os = new DataOutputStream(connection.getOutputStream());
                 os.writeBytes(data);
@@ -123,7 +120,7 @@ public class RequestManager {
             while ((line = br.readLine()) != null) {
                 sb.append(line).append("\n");
             }
-            listener.onResultCompleted(sb.toString());
+            if(listener!=null)listener.onResultCompleted(sb.toString());
             br.close();
             return true;
         } catch (IOException error) {

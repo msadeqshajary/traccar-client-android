@@ -106,12 +106,12 @@ public class LoginActivity extends AppCompatActivity {
                                     try {
                                         JSONObject jo = new JSONObject(result);
                                         preferences.edit().putString("UserId", jo.getString("userId")).apply();
+                                        Log.e("USERID",jo.getString("id"));
                                         preferences.edit().putString("AccessToken", jo.getString("id")).apply();
                                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
-
                                 }
                                 addDevice();
                             }

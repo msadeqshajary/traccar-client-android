@@ -81,6 +81,21 @@ public class ProfileFragment extends Fragment {
         final EditText lastName = v.findViewById(R.id.fragment_profile_lastname);
         final EditText phone = v.findViewById(R.id.fragment_profile_phone);
 
+        DbHelper helper = new DbHelper(getContext());
+        UserItem user = helper.getUser();
+        if(user!=null){
+            name.setText(user.getName());
+            lastName.setText(user.getLast());
+            phone.setText(user.getPhone());
+
+            if(user.getImg()!=null) {
+                Bitmap bitmap = BitmapFactory.decodeFile(user.getImg());
+                profileImage.setImageBitmap(bitmap);
+                //Blur container's background
+                Blurry.with(getContext()).from(bitmap).into(imageContainer);
+            }
+        }
+
         TextView subject = v.findViewById(R.id.fragment_profile_subject);
         TextView deviceSubject = v.findViewById(R.id.fragment_profile_phone_name_tv);
         TextView device = v.findViewById(R.id.fragment_profile_phone_name);
