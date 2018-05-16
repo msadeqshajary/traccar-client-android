@@ -20,6 +20,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import org.traccar.client.Settings.SettingsFragment;
+
 public class AutostartReceiver extends WakefulBroadcastReceiver {
     
     @Override

@@ -27,6 +27,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
+import org.traccar.client.Settings.SettingsFragment;
+
 public class MainApplication extends Application {
 
     public static final String PRIMARY_CHANNEL = "default";

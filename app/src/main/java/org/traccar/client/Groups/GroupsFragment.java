@@ -136,7 +136,7 @@ public class GroupsFragment extends Fragment {
             group.setTitle(row.getString("title"));
             group.setId(row.getString("id"));
 
-            items.add(group);;
+            items.add(group);
         }
         return items;
     }

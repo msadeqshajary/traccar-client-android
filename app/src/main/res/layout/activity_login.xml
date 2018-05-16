@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/primary_light">
+
+    <include layout="@layout/toolbar_main"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/login_container"
+        android:layout_alignRight="@+id/login_container"
+        android:gravity="center_horizontal"
+        android:text="ورود به حساب کاربری : "
+        android:layout_marginBottom="10dp"
+        android:textColor="#fff"
+        android:id="@+id/login_title"
+        />
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/login_container"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="45dp"
+        android:layout_marginLeft="45dp"
+        android:paddingTop="15dp"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/cardview_light_background"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            >
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:id="@+id/login_username"
+                android:gravity="left"
+                android:padding="8dp"
+                android:inputType="text"
+                android:lines="1"
+                android:background="@drawable/shape_bg_edittext"
+                />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="نام کاربری : "
+                android:id="@+id/login_username_tv"
+                android:gravity="right"
+                android:paddingRight="10dp"
+                android:layout_gravity="center_vertical"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            >
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:lines="1"
+                android:id="@+id/login_password"
+                android:padding="8dp"
+                android:gravity="left"
+                android:inputType="textPassword"
+                android:background="@drawable/shape_bg_edittext"
+                />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingRight="10dp"
+                android:text="رمز عبور : "
+                android:id="@+id/login_password_tv"
+                android:gravity="right"
+                android:layout_gravity="center_vertical"
+                />
+        </LinearLayout>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/login_submit"
+            android:text="ورود"
+            android:background="@color/accent"
+            android:layout_margin="15dp"
+            android:textColor="#FFF"
+            />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"
+        android:id="@+id/login_progress"
+        android:visibility="invisible"
+        />
+
+</RelativeLayout>

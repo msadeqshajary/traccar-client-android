@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.traccar.client;
+package org.traccar.client.Settings;
 
 import android.Manifest;
 import android.app.AlarmManager;
@@ -44,6 +44,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.Toast;
+
+import org.traccar.client.AboutActivity;
+import org.traccar.client.AutostartReceiver;
+import org.traccar.client.BuildConfig;
+import org.traccar.client.MainActivity;
+import org.traccar.client.R;
+import org.traccar.client.StatusActivity;
+import org.traccar.client.TrackingService;
 
 import java.util.HashSet;
 import java.util.Random;

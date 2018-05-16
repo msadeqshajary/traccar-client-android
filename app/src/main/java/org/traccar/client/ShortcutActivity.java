@@ -35,6 +35,8 @@ import android.widget.Toast;
 import com.mapzen.android.lost.api.LocationServices;
 import com.mapzen.android.lost.api.LostApiClient;
 
+import org.traccar.client.Settings.SettingsFragment;
+
 public class ShortcutActivity extends AppCompatActivity implements LostApiClient.ConnectionCallbacks {
 
     public static final String EXTRA_ACTION = "action";

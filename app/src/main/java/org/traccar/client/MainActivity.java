@@ -15,6 +15,7 @@
  */
 package org.traccar.client;
 
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
@@ -24,15 +25,18 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.traccar.client.Groups.GroupsFragment;
+import org.traccar.client.Map.MainFragment;
 import org.traccar.client.Profile.DbHelper;
 import org.traccar.client.Profile.ProfileFragment;
 import org.traccar.client.Profile.UserItem;
+import org.traccar.client.Settings.SettingsFragment;
 
 import java.util.Locale;
 
@@ -43,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     TextView profileText;
     CircleImageView profileImg;
     DrawerLayout drawer;
+    Fragment fragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,6 +66,30 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(Locale.getDefault().getLanguage().equals("fa"))drawer.openDrawer(Gravity.END);
                 else drawer.openDrawer(Gravity.START);
+            }
+        });
+
+        ImageView language = toolbar.findViewById(R.id.toolbar_language);
+        language.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e("LANG","CLICKED");
+                LanguageDialogFragment dialogFragment = new LanguageDialogFragment();
+                dialogFragment.show(getSupportFragmentManager(),"TAG");
+                dialogFragment.onDismiss(new DialogInterface() {
+                    @Override
+                    public void cancel() {
+
+                    }
+
+                    @Override
+                    public void dismiss() {
+//                        if(fragment!=null){
+//                            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_container, fragment).commit();
+//                        }else
+//                            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_container, new MainFragment()).commit();
+                    }
+                });
             }
         });
 
@@ -109,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClick(View v){
-        Fragment fragment = null;
+        fragment = null;
         switch (v.getId()){
             case R.id.drawer_home:fragment = new MainFragment();
                 break;

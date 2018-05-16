@@ -30,6 +30,8 @@ import com.mapzen.android.lost.api.LocationRequest;
 import com.mapzen.android.lost.api.LocationServices;
 import com.mapzen.android.lost.api.LostApiClient;
 
+import org.traccar.client.Settings.SettingsFragment;
+
 public class PositionProvider implements LostApiClient.ConnectionCallbacks, LocationListener {
 
     private static final String TAG = PositionProvider.class.getSimpleName();
@@ -109,6 +111,9 @@ public class PositionProvider implements LostApiClient.ConnectionCallbacks, Loca
         } else {
             Log.i(TAG, location != null ? "location ignored" : "location nil");
         }
+
+        // After each location update
+        preferences.edit().putLong("lastUpdate",System.currentTimeMillis()).apply();
     }
 
     @Override

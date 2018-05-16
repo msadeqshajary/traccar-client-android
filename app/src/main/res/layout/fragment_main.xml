@@ -22,24 +22,26 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_alignParentBottom="true"
         android:layout_margin="15dp"
         >
 
-        <ImageView
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_placeholder"
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:background="@drawable/shape_bg_text"
-            android:padding="10dp"
+            android:padding="5dp"
             android:layout_margin="5dp"
-            android:id="@+id/fragment_main_current_img"
+            android:id="@+id/fragment_main_last_location_status"
+            android:text="آخرین زمان ارسال اطلاعات : 2 ساعت پیش"
+            android:gravity="center"
+            android:textColor="#FFF"
             />
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="5dp"
             android:textColor="#fff"
@@ -47,6 +49,7 @@
             android:id="@+id/fragment_main_address"
             android:gravity="center"
             android:layout_margin="5dp"
+            android:text="موقعیت جغرافیایی در زمان اجرای نرم افزار"
             />
 
     </LinearLayout>

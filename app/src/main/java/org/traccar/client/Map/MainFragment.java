@@ -1,7 +1,8 @@
-package org.traccar.client;
+package org.traccar.client.Map;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.location.Geocoder;
@@ -9,6 +10,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -41,6 +43,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.traccar.client.Constants;
+import org.traccar.client.R;
+import org.traccar.client.ReverseGeocodingService;
+
+import java.lang.reflect.Type;
+import java.util.Calendar;
+
 public class MainFragment extends Fragment implements OnMapReadyCallback {
 
     GoogleMap map;
@@ -71,15 +80,23 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         //get last known location
         getLastLocation();
 
+        Typeface sansMedium = Typeface.createFromAsset(getContext().getAssets(),"fonts/sansmedium.ttf");
         address = v.findViewById(R.id.fragment_main_address);
-        address.setTypeface(Typeface.createFromAsset(getContext().getAssets(),"fonts/sansmedium.ttf"));
-        ImageView currentLocationImg = v.findViewById(R.id.fragment_main_current_img);
-        currentLocationImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getLastLocation();
-            }
-        });
+        address.setTypeface(sansMedium);
+
+        TextView lastLocationStatus = v.findViewById(R.id.fragment_main_last_location_status);
+        lastLocationStatus.setTypeface(sansMedium);
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        Calendar calendar = Calendar.getInstance();
+
+        long lastUpdate = preferences.getLong("lastUpdate",0);
+        if(lastUpdate!=0){
+            calendar.setTimeInMillis(preferences.getLong("lastUpdate",0));
+            lastLocationStatus.setText("آخرین ارسال موقعیت شما : "+calendar.get(Calendar.HOUR)+":"+calendar.get(Calendar.MINUTE));
+        }else{
+            lastLocationStatus.setText("تا کنون موقعیت شما به سرور ارسال نشده است");
+        }
 
         return v;
     }
@@ -89,6 +106,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         map = googleMap;
         if(checkLocationPermission()){
             map.setMyLocationEnabled(true);
+            getLastLocation();
         }
     }
 
