@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -12,6 +13,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -32,8 +34,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.traccar.client.MainActivity;
 import org.traccar.client.R;
+import org.traccar.client.RequestManager;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -84,9 +89,9 @@ public class ProfileFragment extends Fragment {
         DbHelper helper = new DbHelper(getContext());
         UserItem user = helper.getUser();
         if(user!=null){
-            name.setText(user.getName());
-            lastName.setText(user.getLast());
-            phone.setText(user.getPhone());
+            name.setText(user.getName(), TextView.BufferType.EDITABLE);
+            lastName.setText(user.getLast(), TextView.BufferType.EDITABLE);
+            phone.setText(user.getPhone(), TextView.BufferType.EDITABLE);
 
             if(user.getImg()!=null) {
                 Bitmap bitmap = BitmapFactory.decodeFile(user.getImg());
@@ -96,7 +101,7 @@ public class ProfileFragment extends Fragment {
             }
         }
 
-        TextView subject = v.findViewById(R.id.fragment_profile_subject);
+        final TextView subject = v.findViewById(R.id.fragment_profile_subject);
         TextView deviceSubject = v.findViewById(R.id.fragment_profile_phone_name_tv);
         TextView device = v.findViewById(R.id.fragment_profile_phone_name);
         device.setTypeface(sansLight);
@@ -121,7 +126,7 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 UserItem user = new UserItem();
-                if(name.getText().toString().equals("") || lastName.getText().toString().equals("") || phone.getText().toString().equals("") || img.equals("")){
+                if(name.getText().toString().equals("") || lastName.getText().toString().equals("") || phone.getText().toString().equals("")){
                     Toast.makeText(getContext(),"لطفا اطلاعات خواسته شده را تکمیل کنید",Toast.LENGTH_LONG).show();
                 }else{
                     user.setDevice(Build.MODEL);
@@ -133,6 +138,45 @@ public class ProfileFragment extends Fragment {
                     helper.insertUser(user);
                     Toast.makeText(getContext(),"اطلاعات کاربری شما ثبت شد",Toast.LENGTH_LONG).show();
                     ((MainActivity)getContext()).updateDrawerProfile();
+
+                    RequestManager requestManager = new RequestManager();
+                    /* TODO: request to change user profile settings:
+                    URL: http://185.142.158.195:10023/explorer/#!/user/user_patchOrCreate/{id}?access_token={access_token}
+                    REQUEST METHOD = PATCH
+                    SEND ID AND ACCESS TOKEN IN URL AND NEW DATA AS JSON
+*/
+
+                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+                    String userId = preferences.getString("UserId",null);
+                    String accessToken = preferences.getString("AccessToken",null);
+
+                    String url = "http://185.142.158.195:10023/api/users/"+userId+"?access_token="+accessToken;
+
+                    // Return FileNotFound Exception error ==> http://185.142.158.195:10023/api/users/5addee55192981181016b046?access_token=vUyeAkUMR94pIpsR3h8ektMGvgPxZ8xSTh4RDQOXlCPa2lDITFkovRNAl6zNUwiI
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("firstname",name.getText().toString());
+                        jsonObject.put("lastname",lastName.getText().toString());
+                        jsonObject.put("mobile",phone.getText().toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    requestManager.setData(jsonObject.toString());
+                    requestManager.sendRequestAsync(url, "PATCH", new RequestManager.RequestHandler() {
+                        @Override
+                        public void onComplete(boolean success) {
+                            Log.e("RESPONSE",success+" ");
+                        }
+                    });
+
+                    requestManager.setListener(new RequestManager.RequestListener() {
+                        @Override
+                        public void onResultCompleted(String result) {
+                            Log.e("RESULT",result);
+                        }
+                    });
+
                 }
             }
         });

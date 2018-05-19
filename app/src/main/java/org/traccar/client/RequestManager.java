@@ -26,18 +26,19 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class RequestManager {
 
     private static final int TIMEOUT = 15 * 1000;
     String data;
-    String token;
 
-    public void setToken(String token) {
-        this.token = token;
-    }
 
     public void setData(String values) {
         this.data = values;
@@ -47,13 +48,14 @@ public class RequestManager {
         void onComplete(boolean success);
     }
 
-    public interface RequestListener{
+    public interface RequestListener {
         void onResultCompleted(String result);
     }
 
     private RequestListener listener;
 
-    public RequestManager(){}
+    public RequestManager() {
+    }
 
     public void setListener(RequestListener listener) {
         this.listener = listener;
@@ -69,13 +71,13 @@ public class RequestManager {
             this.method = method;
         }
 
-        RequestAsyncTask(RequestHandler handler){
+        RequestAsyncTask(RequestHandler handler) {
             this.handler = handler;
         }
 
         @Override
         protected Boolean doInBackground(String... request) {
-            return sendRequest(request[0],method);
+            return sendRequest(request[0], method);
         }
 
         @Override
@@ -92,25 +94,38 @@ public class RequestManager {
 
             connection.setReadTimeout(TIMEOUT);
             connection.setConnectTimeout(TIMEOUT);
-            connection.setRequestMethod((method != null) ? "GET" : "POST");
+            connection.setRequestMethod((method != null && method.equals("GET")) ? "GET" : "POST");
+            connection.setRequestProperty("charset", "utf-8");
+
+            if (method != null && method.equals("PATCH")) {
+                connection.setRequestProperty("X-HTTP-Method-Override", "PATCH");
+                Log.e("REQUEST", "PATCH");
+            }
+
+
+
+
             if (data != null) {
                 connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-                connection.setRequestProperty("Accept","application/json");
+                connection.setRequestProperty("Accept", "application/json");
 
                 DataOutputStream os = new DataOutputStream(connection.getOutputStream());
                 os.writeBytes(data);
                 os.flush();
                 os.close();
 
-                Log.e("JSON RESULT",data);
-
+                Log.e("JSON RESULT", data);
             }
+
+
 
             connection.connect();
-            if(data!=null){
-                Log.e("RESPONSE",connection.getResponseMessage());
-            }
-            inputStream = connection.getInputStream();
+            int status = connection.getResponseCode();
+
+            if (status != HttpURLConnection.HTTP_OK)
+                inputStream = connection.getErrorStream();
+            else
+                inputStream = connection.getInputStream();
 
             InputStreamReader isr = new InputStreamReader(inputStream);
             BufferedReader br = new BufferedReader(isr);
@@ -120,11 +135,20 @@ public class RequestManager {
             while ((line = br.readLine()) != null) {
                 sb.append(line).append("\n");
             }
-            if(listener!=null)listener.onResultCompleted(sb.toString());
+            if (listener != null) listener.onResultCompleted(sb.toString());
             br.close();
             return true;
-        } catch (IOException error) {
-            Log.e("ERROR", error.getLocalizedMessage());
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+            Log.e("ERROR", e.getLocalizedMessage());
+            return false;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            Log.e("ERROR", e.getLocalizedMessage());
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("ERROR", e.getLocalizedMessage());
             return false;
         } finally {
             try {
@@ -133,6 +157,8 @@ public class RequestManager {
                 }
             } catch (IOException secondError) {
                 Log.w(RequestManager.class.getSimpleName(), secondError);
+                Log.e("ERROR", secondError.getLocalizedMessage());
+
             }
         }
     }
@@ -146,5 +172,7 @@ public class RequestManager {
         RequestAsyncTask task = new RequestAsyncTask(method,handler);
         task.execute(request);
     }
+
+
 
 }

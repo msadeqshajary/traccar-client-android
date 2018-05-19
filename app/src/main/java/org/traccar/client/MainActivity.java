@@ -15,7 +15,6 @@
  */
 package org.traccar.client;
 
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,6 +24,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -54,12 +54,17 @@ public class MainActivity extends AppCompatActivity {
     DrawerLayout drawer;
     Fragment fragment;
 
+    public static FragmentManager fragmentManager;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
+        fragmentManager = getSupportFragmentManager();
 
+        drawer = findViewById(R.id.drawer);
+        
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         //setLang();
         String accessToken = preferences.getString("AccessToken","");
@@ -73,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar_toolbar);
         TextView toolbarTitle = toolbar.findViewById(R.id.toolbar_title);
         toolbarTitle.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/sans.ttf"));
-        drawer = findViewById(R.id.drawer);
+
 
         final ImageView drawerIcon = toolbar.findViewById(R.id.toolbar_menu);
         drawerIcon.setOnClickListener(new View.OnClickListener() {
@@ -172,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if(fragment!=null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_container, fragment).commit();
+            fragmentManager.beginTransaction().replace(R.id.main_activity_container, fragment).commit();
             if (drawer.isDrawerOpen(Gravity.START))
                 drawer.closeDrawer(Gravity.START);
             else if (drawer.isDrawerOpen(Gravity.END))
@@ -208,7 +213,6 @@ public class MainActivity extends AppCompatActivity {
 
         RequestManager requestManager = new RequestManager();
         String url = "http://185.142.158.195:10023/api/users/"+id+"?access_token="+token;
-        requestManager.setToken(token);
         requestManager.sendRequestAsync(url, "GET", new RequestManager.RequestHandler() {
             @Override
             public void onComplete(boolean success) {

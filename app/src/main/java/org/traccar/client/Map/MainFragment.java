@@ -1,5 +1,8 @@
 package org.traccar.client.Map;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -7,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -43,12 +47,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.traccar.client.AutostartReceiver;
 import org.traccar.client.Constants;
 import org.traccar.client.R;
 import org.traccar.client.ReverseGeocodingService;
+import org.traccar.client.TrackingService;
 
 import java.lang.reflect.Type;
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.traccar.client.Settings.SettingsFragment.KEY_STATUS;
 
 public class MainFragment extends Fragment implements OnMapReadyCallback {
 
@@ -61,6 +71,9 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_main, container, false);
+
+        //Start tracking service
+        startTrackingService();
 
         // Initialize GoogleMap
         if (map == null) {
@@ -262,7 +275,20 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         System.out.println(seconds + " seconds ago");
         System.out.println(days + " days ago");
 
+        if (hours>0)return hours + " ساعت و "+minutes+" دقیقه پیش ...";
         return (minutes>0)?minutes+" دقیقه پیش... ":seconds+" ثانیه پیش ...";
+    }
+
+    private void startTrackingService() {
+        ContextCompat.startForegroundService(getActivity(), new Intent(getActivity(), TrackingService.class));
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(getActivity(), 0, new Intent(getActivity(), AutostartReceiver.class), 0);
+
+        AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+            alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    15000, 15000, alarmIntent);
+
+            Log.e("SERVICE","TRACKING");
+
     }
 
 }

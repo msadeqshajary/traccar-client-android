@@ -65,8 +65,6 @@ public class PositionProvider implements LostApiClient.ConnectionCallbacks, Loca
 
         deviceId = preferences.getString(SettingsFragment.KEY_DEVICE, "undefined");
         interval = Long.parseLong(preferences.getString(SettingsFragment.KEY_INTERVAL, "600")) * 1000;
-        distance = Integer.parseInt(preferences.getString(SettingsFragment.KEY_DISTANCE, "0"));
-        angle = Integer.parseInt(preferences.getString(SettingsFragment.KEY_ANGLE, "0"));
     }
 
     public void startUpdates() {
